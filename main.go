@@ -38,9 +38,9 @@ func main() {
 	docs.SwaggerInfo.Title = "Swagger E-commerce API"
 	docs.SwaggerInfo.Description = "e-commerce documentation."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = fmt.Sprintf(":%s", port)
+	docs.SwaggerInfo.Host = fmt.Sprintf("localhost:%s", port)
 	docs.SwaggerInfo.BasePath = "/v1"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	docs.SwaggerInfo.Schemes = []string{"http"}
 
 	// router
 	router := gin.Default()

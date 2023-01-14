@@ -14,17 +14,17 @@ type Product struct {
 	IsActive    bool
 }
 
-type ProductInput struct {
+type ProductRequest struct {
 	Name        string `json:"name"`
 	BasePrice   int64  `json:"base_price"`
 	SellPrice   int64  `json:"sell_price"`
 	Stock       int64  `json:"stock"`
 	Description string `json:"description"`
-} // @name ProductInput
+} // @name ProductRequest
 
 type ProductResponse struct {
 	Name        string `json:"name"`
 	SellPrice   int64  `json:"price"`
 	Stock       int64  `json:"stock"`
 	Description string `json:"description"`
-}
+} // @name ProductResponse

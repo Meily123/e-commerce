@@ -32,13 +32,13 @@ func ProductHandler(c *gin.Context) {
 // @Summary post product
 // @Description post create product
 // @Tags Product
-// @Param Body body ProductInput true "Product"
+// @Param Body body ProductRequest true "Product"
 // @Accept  json
 // @Produce  json
 // @Success 200  {object} model.Product
 // @Router /product [post]
 func ProductInputHandler(c *gin.Context) {
-	var productInput model.ProductInput
+	var productInput model.ProductRequest
 
 	err := c.BindJSON(&productInput)
 	if err != nil {

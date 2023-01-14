@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ProductInput"
+                            "$ref": "#/definitions/ProductRequest"
                         }
                     }
                 ],
@@ -92,7 +92,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "ProductInput": {
+        "ProductRequest": {
             "type": "object",
             "properties": {
                 "base_price": {

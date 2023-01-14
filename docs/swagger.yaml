@@ -1,5 +1,5 @@
 definitions:
-  ProductInput:
+  ProductRequest:
     properties:
       base_price:
         type: integer
@@ -53,7 +53,7 @@ paths:
         name: Body
         required: true
         schema:
-          $ref: '#/definitions/ProductInput'
+          $ref: '#/definitions/ProductRequest'
       produces:
       - application/json
       responses:

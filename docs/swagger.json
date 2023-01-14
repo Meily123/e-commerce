@@ -32,7 +32,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/ProductInput"
+                            "$ref": "#/definitions/ProductRequest"
                         }
                     }
                 ],
@@ -80,7 +80,7 @@
         }
     },
     "definitions": {
-        "ProductInput": {
+        "ProductRequest": {
             "type": "object",
             "properties": {
                 "base_price": {
