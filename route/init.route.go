@@ -10,5 +10,4 @@ func InitRoute(router *gin.Engine, version string) {
 	//routes
 	ProductRoute(versionRouter)
 	UserRoute(versionRouter)
-	AuthenticationRoute(versionRouter)
 }

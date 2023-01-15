@@ -1,4 +1,14 @@
 definitions:
+  LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
   ProductRequest:
     properties:
       base_price:
@@ -11,6 +21,25 @@ definitions:
         type: integer
       stock:
         type: integer
+    type: object
+  UserRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - address
+    - email
+    - name
+    - password
+    - username
     type: object
   model.Product:
     properties:
@@ -33,6 +62,29 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.User:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: integer
+      email:
+        type: string
+      id:
+        type: string
+      isActive:
+        type: boolean
+      isAdmin:
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      updatedAt:
+        type: integer
+      username:
+        type: string
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -42,6 +94,28 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Register User
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      summary: Register
+      tags:
+      - User
   /product:
     post:
       consumes:
@@ -85,4 +159,26 @@ paths:
       summary: get product
       tags:
       - Product
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register User
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+      summary: Register
+      tags:
+      - User
 swagger: "2.0"

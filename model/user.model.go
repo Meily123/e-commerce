@@ -20,7 +20,7 @@ type User struct {
 
 type UserRequest struct {
 	Name     string `json:"name" binding:"required"`
-	UserName string `json:"username" binding:"required"`
+	Username string `json:"username" binding:"required"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 	Address  string `json:"address" binding:"required"`
@@ -33,7 +33,12 @@ type UserResponse struct {
 	Email    string `json:"email"`
 	Address  string `json:"address"`
 	IsAdmin  bool   `json:"is_admin"`
-} // @name UserResponse
+} // @name
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+} //@name LoginRequest
 
 func (u *User) BeforeCreate(*gorm.DB) (err error) {
 	u.Id = uuid.New()
