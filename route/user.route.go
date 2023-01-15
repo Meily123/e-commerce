@@ -2,6 +2,7 @@ package route
 
 import (
 	"WebAPI/handler"
+	"WebAPI/middleware"
 	"WebAPI/repository"
 	"WebAPI/service"
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,7 @@ func UserRoute(versionRoute *gin.RouterGroup) {
 	userVersionRoute := versionRoute.Group("/user")
 
 	// user routes
-	userVersionRoute.GET("/")
+	userVersionRoute.GET("/", middleware.RequireAuthentication, userHandler.RequestUserHandler)
 	userVersionRoute.DELETE("/")
 	userVersionRoute.GET("/all")
 	userVersionRoute.GET("/:id")

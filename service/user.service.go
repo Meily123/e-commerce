@@ -14,6 +14,7 @@ import (
 type UserService interface {
 	CreateUser(user model.UserRequest) (model.User, error)
 	LoginUser(loginRequest model.LoginRequest) (string, error)
+	FindById(id string) (model.User, error)
 }
 
 type userService struct {
@@ -79,4 +80,15 @@ func (userServ *userService) LoginUser(loginRequest model.LoginRequest) (string,
 	}
 
 	return tokenString, nil
+}
+
+func (userServ *userService) FindById(id string) (model.User, error) {
+	// find user by id
+	user, err := userServ.userRepository.FindById(id)
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
 }

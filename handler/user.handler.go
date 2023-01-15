@@ -27,6 +27,7 @@ func NewUserHandler(userServ service.UserService) *UserHandler {
 // @Accept  json
 // @Produce  json
 // @Success 200  {object} model.User
+// @Failure 400 {object}  ErrorResponse
 // @Router /register [post]
 func (userHandle *UserHandler) RegistrationHandler(c *gin.Context) {
 	var userRequest model.UserRequest
@@ -79,7 +80,8 @@ func (userHandle *UserHandler) RegistrationHandler(c *gin.Context) {
 // @Param Body body LoginRequest true "User"
 // @Accept  json
 // @Produce  json
-// @Success 200  {object} model.User
+// @Success 200 {object} LoginSuccessResponse
+// @Failure      400  {object}  ErrorResponse
 // @Router /login [post]
 func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 
@@ -121,20 +123,14 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
-			"error": "this2",
+			"error": err,
 		})
 
 		return
 	}
 
-	//return if not empty
-	if token == "" {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":  500,
-			"error": "tis1",
-		})
-		return
-	}
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Authorization", token, 3600*2, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
@@ -142,4 +138,31 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 		"token":   token,
 	})
 
+}
+
+// RequestUserHandler godoc
+// @Summary get self request user
+// @Description get logged in request user
+// @Tags User
+// @Produce  json
+// @Param Cookie header string  false "token"
+// @Success 200 {object} LoginSuccessResponse
+// @Failure      400  {object}  ErrorResponse
+// @Router /user/ [get]
+func (userHandle *UserHandler) RequestUserHandler(c *gin.Context) {
+	user, err := c.Get("user")
+
+	if err != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    user,
+	})
 }

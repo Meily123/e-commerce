@@ -1,4 +1,11 @@
 definitions:
+  ErrorResponse:
+    properties:
+      code:
+        type: integer
+      err:
+        type: string
+    type: object
   LoginRequest:
     properties:
       password:
@@ -8,6 +15,15 @@ definitions:
     required:
     - password
     - username
+    type: object
+  LoginSuccessResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      token:
+        type: string
     type: object
   ProductRequest:
     properties:
@@ -112,7 +128,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.User'
+            $ref: '#/definitions/LoginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Register
       tags:
       - User
@@ -178,7 +198,33 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Register
+      tags:
+      - User
+  /user/:
+    get:
+      description: get logged in request user
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LoginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: get self request user
       tags:
       - User
 swagger: "2.0"
