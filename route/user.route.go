@@ -25,7 +25,7 @@ func UserRoute(versionRoute *gin.RouterGroup) {
 	userVersionRoute.GET("/", middleware.RequireAuthentication, userHandler.SelfRequestUserHandler)
 	userVersionRoute.DELETE("/", middleware.RequireAuthentication, userHandler.SelfDeleteUserHandler)
 	userVersionRoute.GET("/all", middleware.RequireAuthentication, userHandler.GetAllUserHandler)
-	userVersionRoute.GET("/:id")
+	userVersionRoute.GET("/:id", middleware.RequireAuthentication, userHandler.GetFindById)
 	userVersionRoute.PATCH("/admin/:id")
 	userVersionRoute.PUT("/edit/:id")
 	userVersionRoute.PUT("/edit")

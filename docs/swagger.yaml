@@ -1,11 +1,4 @@
 definitions:
-  ErrorResponse:
-    properties:
-      code:
-        type: integer
-      err:
-        type: string
-    type: object
   LoginRequest:
     properties:
       password:
@@ -15,15 +8,6 @@ definitions:
     required:
     - password
     - username
-    type: object
-  LoginSuccessResponse:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-      token:
-        type: string
     type: object
   ProductRequest:
     properties:
@@ -78,29 +62,6 @@ definitions:
       updatedAt:
         type: string
     type: object
-  model.User:
-    properties:
-      address:
-        type: string
-      createdAt:
-        type: integer
-      email:
-        type: string
-      id:
-        type: string
-      isActive:
-        type: boolean
-      isAdmin:
-        type: boolean
-      name:
-        type: string
-      password:
-        type: string
-      updatedAt:
-        type: integer
-      username:
-        type: string
-    type: object
 info:
   contact:
     email: support@swagger.io
@@ -124,15 +85,7 @@ paths:
           $ref: '#/definitions/LoginRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/LoginSuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+      responses: {}
       summary: Register
       tags:
       - User
@@ -193,15 +146,7 @@ paths:
           $ref: '#/definitions/UserRequest'
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.User'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+      responses: {}
       summary: Register
       tags:
       - User
@@ -215,15 +160,7 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/LoginSuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+      responses: {}
       summary: Delete self request user
       tags:
       - User
@@ -236,16 +173,27 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/LoginSuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+      responses: {}
       summary: get self request user
+      tags:
+      - User
+  /user/{id}:
+    get:
+      description: Get user base on id parameters given (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get user by id
       tags:
       - User
   /user/all:
@@ -258,15 +206,7 @@ paths:
         type: string
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/LoginSuccessResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
+      responses: {}
       summary: Get all users
       tags:
       - User

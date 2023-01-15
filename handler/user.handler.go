@@ -232,3 +232,41 @@ func (userHandle *UserHandler) GetAllUserHandler(c *gin.Context) {
 		"user":    users,
 	})
 }
+
+// GetFindById godoc
+// @Summary Get user by id
+// @Description Get user base on id parameters given (Admin Only)
+// @Tags User
+// @Produce  json
+// @Param id path string true "uuid"
+// @Param Cookie header string  false "token"
+// @Router /user/{id} [GET]
+func (userHandle *UserHandler) GetFindById(c *gin.Context) {
+	id := c.Params.ByName("id")
+
+	user, err := c.Get("user")
+
+	if err != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	user, er := userHandle.userService.GetFindById(id, user.(model.User))
+
+	if er != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    user,
+	})
+}
