@@ -2,7 +2,6 @@ package config
 
 import (
 	"WebAPI/model"
-	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -23,6 +22,5 @@ func ConnectToDatabase() *gorm.DB {
 		log.Fatal("cant migrate database", err)
 	}
 
-	fmt.Println("database connected and migrated successfully")
 	return DB
 }

@@ -12,40 +12,6 @@ definitions:
       stock:
         type: integer
     type: object
-  UserRequest:
-    properties:
-      address:
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - address
-    - email
-    - name
-    - password
-    - username
-    type: object
-  UserResponse:
-    properties:
-      address:
-        type: string
-      email:
-        type: string
-      id:
-        type: string
-      is_admin:
-        type: boolean
-      name:
-        type: string
-      username:
-        type: string
-    type: object
   model.Product:
     properties:
       basePrice:
@@ -119,26 +85,4 @@ paths:
       summary: get product
       tags:
       - Product
-  /register:
-    post:
-      consumes:
-      - application/json
-      description: Register User
-      parameters:
-      - description: User
-        in: body
-        name: Body
-        required: true
-        schema:
-          $ref: '#/definitions/UserRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UserResponse'
-      summary: Register
-      tags:
-      - User
 swagger: "2.0"

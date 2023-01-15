@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"WebAPI/config"
 	"WebAPI/model"
+	"WebAPI/service"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -19,13 +19,25 @@ import (
 // @Produce  json
 // @Success 200  {object} UserResponse
 // @Router /register [post]
-func RegistrationHandler(c *gin.Context) {
-	var userInput model.UserRequest
 
-	err := c.BindJSON(&userInput)
+type userHandler struct {
+	userService service.UserService
+}
+
+func NewUserHandler(userServ service.UserService) *userHandler {
+	return &userHandler{userServ}
+}
+
+func (userHandle userHandler) RegistrationHandler(c *gin.Context) {
+	var userRequest model.UserRequest
+
+	err := c.BindJSON(&userRequest)
+
+	// handle error binding and validation
 	if err != nil {
 		var ve validator.ValidationErrors
 		var errorMassages []string
+
 		if errors.As(err, &ve) {
 			for _, e := range err.(validator.ValidationErrors) {
 				errorMessage := fmt.Sprintf("field: %s, condition: %s", e.Field(), e.ActualTag())
@@ -34,6 +46,7 @@ func RegistrationHandler(c *gin.Context) {
 		} else {
 			errorMassages = append(errorMassages, err.Error())
 		}
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   400,
 			"massage": errorMassages,
@@ -41,31 +54,19 @@ func RegistrationHandler(c *gin.Context) {
 		return
 	}
 
-	user := model.User{
-		Name:     userInput.Name,
-		Username: userInput.UserName,
-		Address:  userInput.Address,
-		Password: userInput.Password,
-		Email:    userInput.Email,
-	}
+	user, err := userHandle.userService.CreateUser(userRequest)
 
+	// handle error saving user
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":   500,
 			"massage": "database error registering user",
 		})
-	}
-
-	result := config.ConnectToDatabase().Create(&user)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   500,
-			"massage": "database error registering user",
-		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"massage": "success",
+		"user":    user,
 	})
 }
