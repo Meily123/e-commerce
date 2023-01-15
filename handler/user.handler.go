@@ -26,8 +26,6 @@ func NewUserHandler(userServ service.UserService) *UserHandler {
 // @Param Body body UserRequest true "User"
 // @Accept  json
 // @Produce  json
-// @Success 200  {object} model.User
-// @Failure 400 {object}  ErrorResponse
 // @Router /register [post]
 func (userHandle *UserHandler) RegistrationHandler(c *gin.Context) {
 	var userRequest model.UserRequest
@@ -80,8 +78,6 @@ func (userHandle *UserHandler) RegistrationHandler(c *gin.Context) {
 // @Param Body body LoginRequest true "User"
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} LoginSuccessResponse
-// @Failure      400  {object}  ErrorResponse
 // @Router /login [post]
 func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 
@@ -111,7 +107,7 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 
 	//find user by username
 	token, err := userHandle.userService.LoginUser(loginRequest)
-	fmt.Println(token)
+
 	// handle find saving user
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -146,8 +142,6 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 // @Tags User
 // @Produce  json
 // @Param Cookie header string  false "token"
-// @Success 200 {object} LoginSuccessResponse
-// @Failure      400  {object}  ErrorResponse
 // @Router /user/ [get]
 func (userHandle *UserHandler) SelfRequestUserHandler(c *gin.Context) {
 	user, err := c.Get("user")
@@ -173,8 +167,6 @@ func (userHandle *UserHandler) SelfRequestUserHandler(c *gin.Context) {
 // @Tags User
 // @Produce  json
 // @Param Cookie header string  false "token"
-// @Success 200 {object} LoginSuccessResponse
-// @Failure      400  {object}  ErrorResponse
 // @Router /user/ [DELETE]
 func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
 
@@ -198,11 +190,45 @@ func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("success?")
-
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"massage": "success",
 		"user":    user,
+	})
+}
+
+// GetAllUserHandler godoc
+// @Summary Get all users
+// @Description Get all users data
+// @Tags User
+// @Produce  json
+// @Param Cookie header string  false "token"
+// @Router /user/all [GET]
+func (userHandle *UserHandler) GetAllUserHandler(c *gin.Context) {
+
+	user, err := c.Get("user")
+
+	if err != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	users, er := userHandle.userService.FindAll(user.(model.User))
+
+	if er != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    users,
 	})
 }

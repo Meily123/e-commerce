@@ -16,6 +16,7 @@ type UserService interface {
 	LoginUser(loginRequest model.LoginRequest) (string, error)
 	FindById(id string) (model.User, error)
 	DeleteById(user model.User) error
+	FindAll(user model.User) ([]model.User, error)
 }
 
 type userService struct {
@@ -103,4 +104,21 @@ func (userServ *userService) DeleteById(user model.User) error {
 	}
 
 	return nil
+}
+
+func (userServ *userService) FindAll(user model.User) ([]model.User, error) {
+	// only admin can get all the users
+	if user.IsAdmin == false {
+		err := errors.New("user not authorized")
+		return []model.User{}, err
+	}
+
+	// find all user
+	users, err := userServ.userRepository.FindAll()
+
+	if err != nil {
+		return []model.User{}, err
+	}
+
+	return users, nil
 }

@@ -248,4 +248,26 @@ paths:
       summary: get self request user
       tags:
       - User
+  /user/all:
+    get:
+      description: Get all users data
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LoginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get all users
+      tags:
+      - User
 swagger: "2.0"

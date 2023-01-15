@@ -7,6 +7,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(user model.User) (model.User, error)
+	FindAll() ([]model.User, error)
 	FindByUsername(loginRequest model.LoginRequest) (model.User, error)
 	FindById(id string) (model.User, error)
 	DeleteById(id string) error
@@ -47,4 +48,12 @@ func (userRepo *userRepository) DeleteById(id string) error {
 	err := config.ConnectToDatabase().Delete(&user, "id = ?", id).Error
 
 	return err
+}
+
+func (userRepo *userRepository) FindAll() ([]model.User, error) {
+	// Find by id
+	var users []model.User
+	err := config.ConnectToDatabase().Find(&users).Error
+
+	return users, err
 }
