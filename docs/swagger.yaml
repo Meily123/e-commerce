@@ -206,6 +206,27 @@ paths:
       tags:
       - User
   /user/:
+    delete:
+      description: Delete logged In self request user
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LoginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Delete self request user
+      tags:
+      - User
     get:
       description: get logged in request user
       parameters:

@@ -10,7 +10,7 @@ type User struct {
 	Name      string
 	CreatedAt int64  `gorm:"autoCreateTime:nano"`
 	UpdatedAt int64  `gorm:"autoUpdateTime:nano"`
-	IsActive  bool   `gorm:"default:false"`
+	IsActive  bool   `gorm:"default:true"`
 	Username  string `gorm:"unique"`
 	Email     string `gorm:"unique"`
 	Password  string

@@ -15,6 +15,7 @@ type UserService interface {
 	CreateUser(user model.UserRequest) (model.User, error)
 	LoginUser(loginRequest model.LoginRequest) (string, error)
 	FindById(id string) (model.User, error)
+	DeleteById(user model.User) error
 }
 
 type userService struct {
@@ -91,4 +92,15 @@ func (userServ *userService) FindById(id string) (model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (userServ *userService) DeleteById(user model.User) error {
+	// delete user by id
+	err := userServ.userRepository.DeleteById(user.Id.String())
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

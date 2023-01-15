@@ -140,7 +140,7 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 
 }
 
-// RequestUserHandler godoc
+// SelfRequestUserHandler godoc
 // @Summary get self request user
 // @Description get logged in request user
 // @Tags User
@@ -149,7 +149,7 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 // @Success 200 {object} LoginSuccessResponse
 // @Failure      400  {object}  ErrorResponse
 // @Router /user/ [get]
-func (userHandle *UserHandler) RequestUserHandler(c *gin.Context) {
+func (userHandle *UserHandler) SelfRequestUserHandler(c *gin.Context) {
 	user, err := c.Get("user")
 
 	if err != true {
@@ -159,6 +159,46 @@ func (userHandle *UserHandler) RequestUserHandler(c *gin.Context) {
 		})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    user,
+	})
+}
+
+// SelfDeleteUserHandler godoc
+// @Summary Delete self request user
+// @Description Delete logged In self request user
+// @Tags User
+// @Produce  json
+// @Param Cookie header string  false "token"
+// @Success 200 {object} LoginSuccessResponse
+// @Failure      400  {object}  ErrorResponse
+// @Router /user/ [DELETE]
+func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
+
+	user, err := c.Get("user")
+
+	if err != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	er := userHandle.userService.DeleteById(user.(model.User))
+
+	if er != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	fmt.Println("success?")
 
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,

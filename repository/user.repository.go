@@ -9,6 +9,7 @@ type UserRepository interface {
 	CreateUser(user model.User) (model.User, error)
 	FindByUsername(loginRequest model.LoginRequest) (model.User, error)
 	FindById(id string) (model.User, error)
+	DeleteById(id string) error
 }
 
 type userRepository struct {
@@ -38,4 +39,12 @@ func (userRepo *userRepository) FindById(id string) (model.User, error) {
 	err := config.ConnectToDatabase().Find(&user, "id = ?", id).Error
 
 	return user, err
+}
+
+func (userRepo *userRepository) DeleteById(id string) error {
+	// Find by id
+	user := model.User{}
+	err := config.ConnectToDatabase().Delete(&user, "id = ?", id).Error
+
+	return err
 }
