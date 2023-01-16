@@ -270,3 +270,93 @@ func (userHandle *UserHandler) GetFindById(c *gin.Context) {
 		"user":    user,
 	})
 }
+
+// UpdateUserToAdminHandler godoc
+// @Summary Update user to admin
+// @Description Update user into admin by id (Admin Only)
+// @Tags User
+// @Produce  json
+// @Param id path string true "uuid"
+// @Param Cookie header string  false "token"
+// @Router /user/admin/{id} [PATCH]
+func (userHandle *UserHandler) UpdateUserToAdminHandler(c *gin.Context) {
+	id := c.Params.ByName("id")
+
+	user, err := c.Get("user")
+
+	if err != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	user, er := userHandle.userService.UpdateAdminById(id, user.(model.User))
+
+	if er != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    user,
+	})
+}
+
+// UpdateUserHandler godoc
+// @Summary Update user
+// @Description Update user data (Admin Only)
+// @Tags User
+// @Produce  json
+// @Param id path string true "uuid"
+// @Param Body body UserEditRequest true "User"
+// @Param Cookie header string  false "token"
+// @Router /user/edit/{id} [PUT]
+func (userHandle *UserHandler) UpdateUserHandler(c *gin.Context) {
+	// body
+	var editRequest model.UserEditRequest
+	err := c.BindJSON(&editRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  500,
+			"error": err,
+		})
+		return
+	}
+
+	// param id
+	id := c.Params.ByName("id")
+
+	// get user
+	selfRequestUser, isExists := c.Get("user")
+
+	if isExists != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	user, err := userHandle.userService.UpdateUser(id, selfRequestUser.(model.User), editRequest)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    user,
+	})
+}

@@ -3,8 +3,8 @@ package service
 import (
 	"WebAPI/model"
 	"WebAPI/repository"
+	"WebAPI/shared"
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 	"os"
@@ -18,6 +18,8 @@ type UserService interface {
 	DeleteById(user model.User) error
 	FindAll(user model.User) ([]model.User, error)
 	GetFindById(id string, user model.User) (model.User, error)
+	UpdateAdminById(id string, user model.User) (model.User, error)
+	UpdateUser(id string, selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error)
 }
 
 type userService struct {
@@ -26,10 +28,6 @@ type userService struct {
 
 func NewUserService(userRepo repository.UserRepository) *userService {
 	return &userService{userRepo}
-}
-
-func ByteToString(byteVar []byte) string {
-	return fmt.Sprintf("%s", byteVar)
 }
 
 func (userServ *userService) CreateUser(userRequest model.UserRequest) (model.User, error) {
@@ -46,7 +44,7 @@ func (userServ *userService) CreateUser(userRequest model.UserRequest) (model.Us
 		Name:     userRequest.Name,
 		Username: userRequest.Username,
 		Address:  userRequest.Address,
-		Password: ByteToString(hash),
+		Password: string(hash),
 		Email:    userRequest.Email,
 	}
 
@@ -133,6 +131,64 @@ func (userServ *userService) GetFindById(id string, user model.User) (model.User
 
 	// find all user
 	user, err := userServ.userRepository.FindById(id)
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return user, nil
+}
+
+func (userServ *userService) UpdateAdminById(id string, user model.User) (model.User, error) {
+	// only admin can get all the users
+	if user.IsAdmin == false {
+		err := errors.New("user not authorized")
+		return model.User{}, err
+	}
+
+	// find all user
+	err := userServ.userRepository.UpdateAdminById(id)
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	user, _ = userServ.FindById(id)
+
+	return user, nil
+}
+
+func (userServ *userService) UpdateUser(id string, selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error) {
+
+	// Find user
+	user, err := userServ.GetFindById(id, selfUserRequest)
+
+	if err != nil {
+		return model.User{}, err
+	}
+
+	// check edit request value if none replace with old value
+	editRequest.Name = shared.CompareAndPatchIfEmptyString(editRequest.Name, user.Name)
+	editRequest.Username = shared.CompareAndPatchIfEmptyString(editRequest.Username, user.Username)
+	editRequest.Email = shared.CompareAndPatchIfEmptyString(editRequest.Email, user.Email)
+	editRequest.Address = shared.CompareAndPatchIfEmptyString(editRequest.Address, user.Address)
+	editRequest.Password = shared.CompareAndPatchIfEmptyString(editRequest.Password, user.Password)
+
+	// check if it is the old password or new one
+	if user.Password != editRequest.Password {
+		// hash the password
+		hash, err := bcrypt.GenerateFromPassword([]byte(editRequest.Password), 12)
+
+		editRequest.Password = string(hash)
+
+		if err != nil {
+			errorMassage := errors.New("fail to hash the password")
+			return model.User{}, errorMassage
+		}
+	}
+
+	// update user
+	user, err = userServ.userRepository.Update(user, editRequest)
 
 	if err != nil {
 		return model.User{}, err

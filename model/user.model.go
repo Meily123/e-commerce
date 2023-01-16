@@ -26,6 +26,14 @@ type UserRequest struct {
 	Address  string `json:"address" binding:"required"`
 } // @name UserRequest
 
+type UserEditRequest struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Address  string `json:"address"`
+} // @name UserEditRequest
+
 type UserResponse struct {
 	Id       string `json:"id"`
 	Name     string `json:"name"`

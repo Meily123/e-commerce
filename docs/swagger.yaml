@@ -22,6 +22,19 @@ definitions:
       stock:
         type: integer
     type: object
+  UserEditRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   UserRequest:
     properties:
       address:
@@ -196,6 +209,25 @@ paths:
       summary: Get user by id
       tags:
       - User
+  /user/admin/{id}:
+    patch:
+      description: Update user into admin by id (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update user to admin
+      tags:
+      - User
   /user/all:
     get:
       description: Get all users data
@@ -208,6 +240,31 @@ paths:
       - application/json
       responses: {}
       summary: Get all users
+      tags:
+      - User
+  /user/edit/{id}:
+    put:
+      description: Update user data (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UserEditRequest'
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update user
       tags:
       - User
 swagger: "2.0"
