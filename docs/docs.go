@@ -72,7 +72,7 @@ const docTemplate = `{
         },
         "/product": {
             "post": {
-                "description": "post create product",
+                "description": "Create New Product",
                 "consumes": [
                     "application/json"
                 ],
@@ -82,16 +82,22 @@ const docTemplate = `{
                 "tags": [
                     "Product"
                 ],
-                "summary": "post product",
+                "summary": "Create Product",
                 "parameters": [
                     {
-                        "description": "Product",
+                        "description": "product",
                         "name": "Body",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/ProductRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Cookie",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -100,37 +106,17 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.Product"
                         }
-                    }
-                }
-            }
-        },
-        "/product/{id}": {
-            "get": {
-                "description": "get detail product",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Product"
-                ],
-                "summary": "get product",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "uuid",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
                         }
                     }
                 }
@@ -546,6 +532,12 @@ const docTemplate = `{
         },
         "ProductRequest": {
             "type": "object",
+            "required": [
+                "base_price",
+                "name",
+                "sell_price",
+                "stock"
+            ],
             "properties": {
                 "base_price": {
                     "type": "integer"
@@ -640,32 +632,32 @@ const docTemplate = `{
         "model.Product": {
             "type": "object",
             "properties": {
-                "basePrice": {
+                "base_price": {
                     "type": "integer"
                 },
-                "createdAt": {
-                    "type": "string"
+                "created_at": {
+                    "type": "integer"
                 },
-                "description": {
+                "descriptions": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "isActive": {
+                "is_active": {
                     "type": "boolean"
                 },
                 "name": {
                     "type": "string"
                 },
-                "sellPrice": {
+                "sell_price": {
                     "type": "integer"
                 },
                 "stock": {
                     "type": "integer"
                 },
-                "updatedAt": {
-                    "type": "string"
+                "updated_at": {
+                    "type": "integer"
                 }
             }
         }

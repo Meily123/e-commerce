@@ -6,16 +6,17 @@ import (
 )
 
 type User struct {
-	Id        uuid.UUID `json:"id" gorm:"primaryKey;default:uuid_generate_v4()"`
-	Name      string    `json:"name"`
-	CreatedAt int64     `json:"created_at" gorm:"autoCreateTime:nano"`
-	UpdatedAt int64     `json:"updated_at" gorm:"autoUpdateTime:nano"`
-	IsActive  bool      `json:"is_active" gorm:"default:true"`
-	Username  string    `json:"username" gorm:"unique"`
-	Email     string    `json:"email" gorm:"unique"`
-	Password  string    `json:"password" gorm:"unique"`
-	Address   string    `json:"address"`
-	IsAdmin   bool      `json:"is_admin" gorm:"default:false"`
+	Id        uuid.UUID     `json:"id" gorm:"primaryKey;default:uuid_generate_v4(); not null"`
+	Name      string        `json:"name" gorm:"not null"`
+	CreatedAt int64         `json:"created_at" gorm:"autoCreateTime:nano; not null"`
+	UpdatedAt int64         `json:"updated_at" gorm:"autoUpdateTime:nano; not null"`
+	IsActive  bool          `json:"is_active" gorm:"default:true; not null"`
+	Username  string        `json:"username" gorm:"unique; not null"`
+	Email     string        `json:"email" gorm:"unique; not null"`
+	Password  string        `json:"password" gorm:"unique; not null"`
+	Address   string        `json:"address" gorm:"not null"`
+	IsAdmin   bool          `json:"is_admin" gorm:"default:false; not null"`
+	Cart      []CartProduct `json:"cart" gorm:"foreignKey:UserId;references:Id"`
 }
 
 type UserRequest struct {

@@ -37,6 +37,11 @@ definitions:
         type: integer
       stock:
         type: integer
+    required:
+    - base_price
+    - name
+    - sell_price
+    - stock
     type: object
   SuccessUserResponse:
     type: object
@@ -89,24 +94,24 @@ definitions:
     type: object
   model.Product:
     properties:
-      basePrice:
+      base_price:
         type: integer
-      createdAt:
-        type: string
-      description:
+      created_at:
+        type: integer
+      descriptions:
         type: string
       id:
         type: string
-      isActive:
+      is_active:
         type: boolean
       name:
         type: string
-      sellPrice:
+      sell_price:
         type: integer
       stock:
         type: integer
-      updatedAt:
-        type: string
+      updated_at:
+        type: integer
     type: object
 info:
   contact:
@@ -151,14 +156,18 @@ paths:
     post:
       consumes:
       - application/json
-      description: post create product
+      description: Create New Product
       parameters:
-      - description: Product
+      - description: product
         in: body
         name: Body
         required: true
         schema:
           $ref: '#/definitions/ProductRequest'
+      - description: token
+        in: header
+        name: Cookie
+        type: string
       produces:
       - application/json
       responses:
@@ -166,28 +175,15 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Product'
-      summary: post product
-      tags:
-      - Product
-  /product/{id}:
-    get:
-      consumes:
-      - application/json
-      description: get detail product
-      parameters:
-      - description: uuid
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+        "400":
+          description: Bad Request
           schema:
-            $ref: '#/definitions/model.Product'
-      summary: get product
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create Product
       tags:
       - Product
   /register:

@@ -49,12 +49,6 @@ func RequireAuthentication(c *gin.Context) {
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 
-		emptyUser := model.User{}
-
-		if user == emptyUser {
-			c.AbortWithStatus(http.StatusUnauthorized)
-		}
-
 		// Attach Req
 		c.Set("user", user)
 		c.Set("is_admin", user.IsAdmin)
@@ -64,4 +58,27 @@ func RequireAuthentication(c *gin.Context) {
 	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
+}
+
+func AdminOnly(c *gin.Context) {
+	user, err := c.Get("user")
+
+	if err != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		c.Abort()
+		return
+	}
+
+	if user.(model.User).IsAdmin == false {
+		c.JSON(http.StatusForbidden, gin.H{
+			"code":  403,
+			"error": "you don't have access",
+		})
+		c.Abort()
+		return
+	}
+	return
 }
