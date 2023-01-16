@@ -3,8 +3,8 @@ package shared
 import "WebAPI/model"
 
 type ErrorResponse struct {
-	Code int
-	Err  string
+	Code  int
+	Error string
 } //@name ErrorResponse
 
 type LoginSuccessResponse struct {

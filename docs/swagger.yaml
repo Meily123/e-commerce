@@ -3,7 +3,7 @@ definitions:
     properties:
       code:
         type: integer
-      err:
+      error:
         type: string
     type: object
   LoginRequest:
