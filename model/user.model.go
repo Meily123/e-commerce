@@ -6,16 +6,16 @@ import (
 )
 
 type User struct {
-	Id        uuid.UUID `gorm:"primaryKey;default:uuid_generate_v4()"`
-	Name      string
-	CreatedAt int64  `gorm:"autoCreateTime:nano"`
-	UpdatedAt int64  `gorm:"autoUpdateTime:nano"`
-	IsActive  bool   `gorm:"default:true"`
-	Username  string `gorm:"unique"`
-	Email     string `gorm:"unique"`
-	Password  string
-	Address   string
-	IsAdmin   bool `gorm:"default:false"`
+	Id        uuid.UUID `json:"id" gorm:"primaryKey;default:uuid_generate_v4()"`
+	Name      string    `json:"name"`
+	CreatedAt int64     `json:"created_at" gorm:"autoCreateTime:nano"`
+	UpdatedAt int64     `json:"updated_at" gorm:"autoUpdateTime:nano"`
+	IsActive  bool      `json:"is_active" gorm:"default:true"`
+	Username  string    `json:"username" gorm:"unique"`
+	Email     string    `json:"email" gorm:"unique"`
+	Password  string    `json:"password" gorm:"unique"`
+	Address   string    `json:"address"`
+	IsAdmin   bool      `json:"is_admin" gorm:"default:false"`
 }
 
 type UserRequest struct {
@@ -41,7 +41,7 @@ type UserResponse struct {
 	Email    string `json:"email"`
 	Address  string `json:"address"`
 	IsAdmin  bool   `json:"is_admin"`
-} // @name
+} // @name UserResponse
 
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`

@@ -1,4 +1,11 @@
 definitions:
+  ErrorResponse:
+    properties:
+      code:
+        type: integer
+      err:
+        type: string
+    type: object
   LoginRequest:
     properties:
       password:
@@ -8,6 +15,15 @@ definitions:
     required:
     - password
     - username
+    type: object
+  LoginSuccessResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      token:
+        type: string
     type: object
   ProductRequest:
     properties:
@@ -21,6 +37,8 @@ definitions:
         type: integer
       stock:
         type: integer
+    type: object
+  SuccessUserResponse:
     type: object
   UserEditRequest:
     properties:
@@ -53,6 +71,21 @@ definitions:
     - name
     - password
     - username
+    type: object
+  UserResponse:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      is_admin:
+        type: boolean
+      name:
+        type: string
+      username:
+        type: string
     type: object
   model.Product:
     properties:
@@ -98,10 +131,22 @@ paths:
           $ref: '#/definitions/LoginRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/LoginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Register
       tags:
-      - User
+      - Authentication
   /product:
     post:
       consumes:
@@ -159,10 +204,22 @@ paths:
           $ref: '#/definitions/UserRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Register
       tags:
-      - User
+      - Authentication
   /user/:
     delete:
       description: Delete logged In self request user
@@ -173,7 +230,19 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Delete self request user
       tags:
       - User
@@ -186,7 +255,19 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: get self request user
       tags:
       - User
@@ -205,7 +286,19 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Get user by id
       tags:
       - User
@@ -224,7 +317,19 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Update user to admin
       tags:
       - User
@@ -238,7 +343,21 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/UserResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Get all users
       tags:
       - User
@@ -258,7 +377,19 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Update self user
       tags:
       - User
@@ -283,7 +414,19 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
       summary: Update user
       tags:
       - User
