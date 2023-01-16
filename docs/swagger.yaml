@@ -242,6 +242,26 @@ paths:
       summary: Get all users
       tags:
       - User
+  /user/edit:
+    put:
+      description: Update self request user data
+      parameters:
+      - description: User
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/UserEditRequest'
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update self user
+      tags:
+      - User
   /user/edit/{id}:
     put:
       description: Update user data (Admin Only)

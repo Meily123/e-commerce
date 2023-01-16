@@ -233,6 +233,36 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/user/edit": {
+            "put": {
+                "description": "Update self request user data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update self user",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserEditRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "Cookie",
+                        "in": "header"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/user/edit/{id}": {
             "put": {
                 "description": "Update user data (Admin Only)",

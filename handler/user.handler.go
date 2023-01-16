@@ -360,3 +360,51 @@ func (userHandle *UserHandler) UpdateUserHandler(c *gin.Context) {
 		"user":    user,
 	})
 }
+
+// SelfUpdateUserHandler godoc
+// @Summary Update self user
+// @Description Update self request user data
+// @Tags User
+// @Produce  json
+// @Param Body body UserEditRequest true "User"
+// @Param Cookie header string  false "token"
+// @Router /user/edit [PUT]
+func (userHandle *UserHandler) SelfUpdateUserHandler(c *gin.Context) {
+	// body
+	var editRequest model.UserEditRequest
+	err := c.BindJSON(&editRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  500,
+			"error": err,
+		})
+		return
+	}
+
+	// get user
+	selfRequestUser, isExists := c.Get("user")
+
+	if isExists != true {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  401,
+			"error": "user not authorized",
+		})
+		return
+	}
+
+	user, err := userHandle.userService.SelfUpdateUser(selfRequestUser.(model.User), editRequest)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  400,
+			"error": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"user":    user,
+	})
+}

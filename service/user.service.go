@@ -20,6 +20,7 @@ type UserService interface {
 	GetFindById(id string, user model.User) (model.User, error)
 	UpdateAdminById(id string, user model.User) (model.User, error)
 	UpdateUser(id string, selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error)
+	SelfUpdateUser(selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error)
 }
 
 type userService struct {
@@ -167,6 +168,14 @@ func (userServ *userService) UpdateUser(id string, selfUserRequest model.User, e
 		return model.User{}, err
 	}
 
+	user, err = userServ.SelfUpdateUser(user, editRequest)
+	return user, err
+}
+
+func (userServ *userService) SelfUpdateUser(selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error) {
+
+	user := selfUserRequest
+
 	// check edit request value if none replace with old value
 	editRequest.Name = shared.CompareAndPatchIfEmptyString(editRequest.Name, user.Name)
 	editRequest.Username = shared.CompareAndPatchIfEmptyString(editRequest.Username, user.Username)
@@ -188,7 +197,7 @@ func (userServ *userService) UpdateUser(id string, selfUserRequest model.User, e
 	}
 
 	// update user
-	user, err = userServ.userRepository.Update(user, editRequest)
+	user, err := userServ.userRepository.Update(user, editRequest)
 
 	if err != nil {
 		return model.User{}, err

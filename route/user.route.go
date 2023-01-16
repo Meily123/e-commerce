@@ -28,5 +28,5 @@ func UserRoute(versionRoute *gin.RouterGroup) {
 	userVersionRoute.GET("/:id", middleware.RequireAuthentication, userHandler.GetFindById)
 	userVersionRoute.PATCH("/admin/:id", middleware.RequireAuthentication, userHandler.UpdateUserToAdminHandler)
 	userVersionRoute.PUT("/edit/:id", middleware.RequireAuthentication, userHandler.UpdateUserHandler)
-	userVersionRoute.PUT("/edit")
+	userVersionRoute.PUT("/edit", middleware.RequireAuthentication, userHandler.SelfUpdateUserHandler)
 }
