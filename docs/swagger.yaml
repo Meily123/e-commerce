@@ -1,4 +1,28 @@
 definitions:
+  CartEditRequest:
+    properties:
+      quantity:
+        type: integer
+    required:
+    - quantity
+    type: object
+  CartRequest:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - product_id
+    - quantity
+    type: object
+  CartResponse:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        type: integer
+    type: object
   ErrorResponse:
     properties:
       code:
@@ -25,6 +49,24 @@ definitions:
       token:
         type: string
     type: object
+  ProductEditRequest:
+    properties:
+      base_price:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      sell_price:
+        type: integer
+      stock:
+        type: integer
+    required:
+    - base_price
+    - name
+    - sell_price
+    - stock
+    type: object
   ProductRequest:
     properties:
       base_price:
@@ -42,6 +84,17 @@ definitions:
     - name
     - sell_price
     - stock
+    type: object
+  ProductResponse:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
     type: object
   SuccessUserResponse:
     type: object
@@ -92,6 +145,19 @@ definitions:
       username:
         type: string
     type: object
+  model.CartProduct:
+    properties:
+      id:
+        type: string
+      item:
+        $ref: '#/definitions/model.Product'
+      itemId:
+        type: string
+      quantity:
+        type: integer
+      userId:
+        type: string
+    type: object
   model.Product:
     properties:
       base_price:
@@ -122,6 +188,134 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 paths:
+  /cart:
+    get:
+      description: Get all carts data
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/CartResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get all carts
+      tags:
+      - Cart
+    post:
+      consumes:
+      - application/json
+      description: Create New Cart
+      parameters:
+      - description: cart
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CartRequest'
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CartProduct'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create Cart
+      tags:
+      - Cart
+  /cart/{id}:
+    delete:
+      description: Delete cart by id
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Delete cart
+      tags:
+      - Cart
+    put:
+      description: Update cart data (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cart
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CartEditRequest'
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update cart
+      tags:
+      - Cart
   /login:
     post:
       consumes:
@@ -153,6 +347,33 @@ paths:
       tags:
       - Authentication
   /product:
+    get:
+      description: Get all products data
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ProductResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get all products
+      tags:
+      - Product
     post:
       consumes:
       - application/json
@@ -184,6 +405,103 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Create Product
+      tags:
+      - Product
+  /product/{id}:
+    delete:
+      description: Delete product by id
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Delete product
+      tags:
+      - Product
+    get:
+      description: Get product base on id parameters given (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get product by id
+      tags:
+      - Product
+    put:
+      description: Update product data (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/ProductEditRequest'
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update product
       tags:
       - Product
   /register:

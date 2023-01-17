@@ -33,6 +33,11 @@ func (userRepo *userRepository) FindByUsername(loginRequest model.LoginRequest) 
 	// Find By Username
 	user := model.User{}
 	err := config.ConnectToDatabase().Find(&user, "username = ?", loginRequest.Username).Error
+	if err != nil {
+		return model.User{}, err
+	}
+
+	err = user.EmptyUserStruct()
 
 	return user, err
 }
@@ -41,6 +46,11 @@ func (userRepo *userRepository) FindById(id string) (model.User, error) {
 	// Find by id
 	user := model.User{}
 	err := config.ConnectToDatabase().Find(&user, "id = ?", id).Error
+	if err != nil {
+		return model.User{}, err
+	}
+
+	err = user.EmptyUserStruct()
 
 	return user, err
 }

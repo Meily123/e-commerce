@@ -58,11 +58,145 @@ func (productHandle *ProductHandler) CreateProductHandler(c *gin.Context) {
 
 	product, err := productHandle.productService.CreateProduct(productRequest)
 
-	// handle error saving user
+	// handle error saving product
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": "something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"product": product,
+	})
+}
+
+// DeleteProductHandler godoc
+// @Summary Delete product
+// @Description Delete product by id
+// @Tags Product
+// @Produce  json
+// @Param id path string true "uuid"
+// @Param Cookie header string  false "token"
+// @success 200 {object} ProductResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /product/{id} [DELETE]
+func (productHandle *ProductHandler) DeleteProductHandler(c *gin.Context) {
+	id := c.Params.ByName("id")
+
+	er := productHandle.productService.DeleteById(id)
+
+	if er != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  403,
+			"error": "you don't have access",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+	})
+}
+
+// GetAllProductHandler godoc
+// @Summary Get all products
+// @Description Get all products data
+// @Tags Product
+// @Produce  json
+// @Param Cookie header string  false "token"
+// @success 200 {array} ProductResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /product [GET]
+func (productHandle *ProductHandler) GetAllProductHandler(c *gin.Context) {
+
+	products, er := productHandle.productService.FindAll()
+
+	if er != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"code":  403,
+			"error": "you don't have access",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"product": products,
+	})
+}
+
+// GetFindById godoc
+// @Summary Get product by id
+// @Description Get product base on id parameters given (Admin Only)
+// @Tags Product
+// @Produce  json
+// @Param id path string true "uuid"
+// @Param Cookie header string  false "token"
+// @success 200 {object} ProductResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /product/{id} [GET]
+func (productHandle *ProductHandler) GetFindById(c *gin.Context) {
+	id := c.Params.ByName("id")
+
+	product, er := productHandle.productService.GetFindById(id)
+
+	if er != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  400,
+			"error": "Bad Request",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"massage": "success",
+		"product": product,
+	})
+}
+
+// UpdateProductHandler godoc
+// @Summary Update product
+// @Description Update product data (Admin Only)
+// @Tags Product
+// @Produce  json
+// @Param id path string true "uuid"
+// @Param Body body ProductEditRequest true "Product"
+// @Param Cookie header string  false "token"
+// @success 200 {object} ProductResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /product/{id} [PUT]
+func (productHandle *ProductHandler) UpdateProductHandler(c *gin.Context) {
+	// body
+	var editRequest model.ProductEditRequest
+	err := c.BindJSON(&editRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  500,
+			"error": err,
+		})
+		return
+	}
+
+	// param id
+	id := c.Params.ByName("id")
+
+	product, err := productHandle.productService.UpdateProduct(id, editRequest)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"code":  400,
+			"error": "error bad request",
 		})
 		return
 	}

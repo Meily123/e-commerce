@@ -15,8 +15,9 @@ func ProductRoute(versionRoute *gin.RouterGroup) {
 
 	productVersionRoute := versionRoute.Group("/product")
 
-	productVersionRoute.DELETE("/:id")
-	productVersionRoute.PUT("/:id")
-	productVersionRoute.POST("/", middleware.RequireAuthentication, middleware.AdminOnly, productHandler.CreateProductHandler)
-	productVersionRoute.GET("/")
+	productVersionRoute.DELETE("/:id", middleware.RequireAuthentication, middleware.AdminOnly, productHandler.DeleteProductHandler)
+	productVersionRoute.PUT("/:id", middleware.RequireAuthentication, middleware.AdminOnly, productHandler.UpdateProductHandler)
+	productVersionRoute.GET("/:id", middleware.RequireAuthentication, productHandler.GetFindById)
+	productVersionRoute.POST("", middleware.RequireAuthentication, middleware.AdminOnly, productHandler.CreateProductHandler)
+	productVersionRoute.GET("", middleware.RequireAuthentication, productHandler.GetAllProductHandler)
 }

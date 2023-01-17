@@ -1,12 +1,13 @@
 package model
 
 import (
+	"errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	Id        uuid.UUID     `json:"id" gorm:"primaryKey;default:uuid_generate_v4(); not null"`
+	Id        uuid.UUID     `json:"id" gorm:"primaryKey;default:uuid_generate_v4(); not null; constraint:OnDelete:CASCADE;"`
 	Name      string        `json:"name" gorm:"not null"`
 	CreatedAt int64         `json:"created_at" gorm:"autoCreateTime:nano; not null"`
 	UpdatedAt int64         `json:"updated_at" gorm:"autoUpdateTime:nano; not null"`
@@ -52,4 +53,11 @@ type LoginRequest struct {
 func (u *User) BeforeCreate(*gorm.DB) (err error) {
 	u.Id = uuid.New()
 	return
+}
+
+func (u User) EmptyUserStruct() error {
+	if u.Id.String() == "00000000-0000-0000-0000-000000000000" {
+		return errors.New("error not found")
+	}
+	return nil
 }
