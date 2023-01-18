@@ -24,9 +24,13 @@ func UserRoute(versionRoute *gin.RouterGroup) {
 	// user routes
 	userVersionRoute.GET("/", middleware.RequireAuthentication, userHandler.SelfRequestUserHandler)
 	userVersionRoute.DELETE("/", middleware.RequireAuthentication, userHandler.SelfDeleteUserHandler)
-	userVersionRoute.GET("/all", middleware.RequireAuthentication, userHandler.GetAllUserHandler)
-	userVersionRoute.GET("/:id", middleware.RequireAuthentication, userHandler.GetFindById)
-	userVersionRoute.PATCH("/admin/:id", middleware.RequireAuthentication, userHandler.UpdateUserToAdminHandler)
-	userVersionRoute.PUT("/edit/:id", middleware.RequireAuthentication, userHandler.UpdateUserHandler)
-	userVersionRoute.PUT("/edit", middleware.RequireAuthentication, userHandler.SelfUpdateUserHandler)
+	userVersionRoute.PUT("/", middleware.RequireAuthentication, userHandler.SelfUpdateUserHandler)
+
+	// user route, only admin Access
+	adminUserVersionRoute := versionRoute.Group("/admin/user")
+	adminUserVersionRoute.GET("/all", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.GetAllUserHandler)
+	adminUserVersionRoute.GET("/:id", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.GetFindById)
+	adminUserVersionRoute.PATCH("/:id", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.UpdateUserToAdminHandler)
+	adminUserVersionRoute.PUT("/:id", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.UpdateUserHandler)
+
 }

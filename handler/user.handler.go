@@ -21,12 +21,12 @@ func NewUserHandler(userServ service.UserService) *UserHandler {
 
 // RegistrationHandler godoc
 // @Summary Register
-// @Description Register User
+// @Description Create User
 // @Tags Authentication
 // @Param Body body UserRequest true "User"
 // @Accept  json
 // @Produce  json
-// @success 200 {object} UserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /register [post]
@@ -75,13 +75,13 @@ func (userHandle *UserHandler) RegistrationHandler(c *gin.Context) {
 }
 
 // LoginHandler godoc
-// @Summary Register
-// @Description Register User
+// @Summary Login
+// @Description Login User
 // @Tags Authentication
 // @Param Body body LoginRequest true "User"
 // @Accept  json
 // @Produce  json
-// @success 200 {object} LoginSuccessResponse
+// @Success 200 {object} SuccessResponse{data=string}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /login [post]
@@ -91,6 +91,7 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 	var loginRequest model.LoginRequest
 	err := c.BindJSON(&loginRequest)
 
+	// handle error binding and validation
 	if err != nil {
 		var ve validator.ValidationErrors
 		var errorMassages []string
@@ -125,6 +126,7 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 		return
 	}
 
+	// set token to cookie
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", token, 3600*2, "", "", false, true)
 
@@ -142,7 +144,7 @@ func (userHandle *UserHandler) LoginHandler(c *gin.Context) {
 // @Tags User
 // @Produce  json
 // @Param Cookie header string  false "token"
-// @success 200 {object} UserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /user/ [get]
@@ -170,15 +172,15 @@ func (userHandle *UserHandler) SelfRequestUserHandler(c *gin.Context) {
 // @Tags User
 // @Produce  json
 // @Param Cookie header string  false "token"
-// @success 200 {object} SuccessUserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /user/ [DELETE]
 func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
 
-	user, err := c.Get("user")
+	user, exist := c.Get("user")
 
-	if err != true {
+	if exist != true {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"code":  401,
 			"error": "user not authorized",
@@ -186,12 +188,12 @@ func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
 		return
 	}
 
-	er := userHandle.userService.DeleteById(user.(model.User))
+	err := userHandle.userService.DeleteById(user.(model.User))
 
-	if er != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "something went wrong",
 		})
 		return
 	}
@@ -205,32 +207,22 @@ func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
 
 // GetAllUserHandler godoc
 // @Summary Get all users
-// @Description Get all users data
+// @Description Get all users data (Admin Only)
 // @Tags User
 // @Produce  json
 // @Param Cookie header string  false "token"
-// @success 200 {array} UserResponse
+// @Success 200 {object} SuccessResponse{data=[]model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /user/all [GET]
 func (userHandle *UserHandler) GetAllUserHandler(c *gin.Context) {
 
-	user, err := c.Get("user")
+	users, err := userHandle.userService.FindAll()
 
-	if err != true {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  401,
-			"error": "user not authorized",
-		})
-		return
-	}
-
-	users, er := userHandle.userService.FindAll(user.(model.User))
-
-	if er != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "something went wrong",
 		})
 		return
 	}
@@ -249,29 +241,19 @@ func (userHandle *UserHandler) GetAllUserHandler(c *gin.Context) {
 // @Produce  json
 // @Param id path string true "uuid"
 // @Param Cookie header string  false "token"
-// @success 200 {object} UserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/{id} [GET]
+// @Router /user/admin/{id} [GET]
 func (userHandle *UserHandler) GetFindById(c *gin.Context) {
 	id := c.Params.ByName("id")
 
-	user, err := c.Get("user")
+	user, err := userHandle.userService.GetFindById(id)
 
-	if err != true {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  401,
-			"error": "user not authorized",
-		})
-		return
-	}
-
-	user, er := userHandle.userService.GetFindById(id, user.(model.User))
-
-	if er != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "something went wrong",
 		})
 		return
 	}
@@ -279,7 +261,7 @@ func (userHandle *UserHandler) GetFindById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"massage": "success",
-		"user":    shared.UserRenderToResponse(user.(model.User)),
+		"user":    shared.UserRenderToResponse(user),
 	})
 }
 
@@ -290,29 +272,19 @@ func (userHandle *UserHandler) GetFindById(c *gin.Context) {
 // @Produce  json
 // @Param id path string true "uuid"
 // @Param Cookie header string  false "token"
-// @success 200 {object} UserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /user/admin/{id} [PATCH]
 func (userHandle *UserHandler) UpdateUserToAdminHandler(c *gin.Context) {
 	id := c.Params.ByName("id")
 
-	user, err := c.Get("user")
+	user, err := userHandle.userService.UpdateAdminById(id)
 
-	if err != true {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  401,
-			"error": "user not authorized",
-		})
-		return
-	}
-
-	user, er := userHandle.userService.UpdateAdminById(id, user.(model.User))
-
-	if er != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "something went wrong",
 		})
 		return
 	}
@@ -320,30 +292,32 @@ func (userHandle *UserHandler) UpdateUserToAdminHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"massage": "success",
-		"user":    shared.UserRenderToResponse(user.(model.User)),
+		"user":    shared.UserRenderToResponse(user),
 	})
 }
 
 // UpdateUserHandler godoc
 // @Summary Update user
-// @Description Update user data (Admin Only)
+// @Description Update user data by id user (Admin Only)
 // @Tags User
 // @Produce  json
 // @Param id path string true "uuid"
 // @Param Body body UserEditRequest true "User"
 // @Param Cookie header string  false "token"
-// @success 200 {object} UserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/edit/{id} [PUT]
+// @Router /user/admin/{id} [PUT]
 func (userHandle *UserHandler) UpdateUserHandler(c *gin.Context) {
 	// body
 	var editRequest model.UserEditRequest
+
 	err := c.BindJSON(&editRequest)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":  500,
-			"error": err,
+			"code":  400,
+			"error": "bad request",
 		})
 		return
 	}
@@ -351,23 +325,12 @@ func (userHandle *UserHandler) UpdateUserHandler(c *gin.Context) {
 	// param id
 	id := c.Params.ByName("id")
 
-	// get user
-	selfRequestUser, isExists := c.Get("user")
-
-	if isExists != true {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  401,
-			"error": "user not authorized",
-		})
-		return
-	}
-
-	user, err := userHandle.userService.UpdateUser(id, selfRequestUser.(model.User), editRequest)
+	user, err := userHandle.userService.UpdateUser(id, editRequest)
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": "something went wrong",
 		})
 		return
 	}
@@ -386,18 +349,19 @@ func (userHandle *UserHandler) UpdateUserHandler(c *gin.Context) {
 // @Produce  json
 // @Param Body body UserEditRequest true "User"
 // @Param Cookie header string  false "token"
-// @success 200 {object} UserResponse
+// @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/edit [PUT]
+// @Router /user/ [PUT]
 func (userHandle *UserHandler) SelfUpdateUserHandler(c *gin.Context) {
 	// body
 	var editRequest model.UserEditRequest
 	err := c.BindJSON(&editRequest)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":  500,
-			"error": err,
+			"code":  400,
+			"error": "bad request",
 		})
 		return
 	}

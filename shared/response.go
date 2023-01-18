@@ -25,6 +25,12 @@ type SuccessListUserResponse struct {
 	user    []model.UserResponse
 } //@name SuccessListUserResponse
 
+type SuccessResponse struct {
+	Code    int         `json:"code" `
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
+} //@name SuccessResponse
+
 func ListUserRenderToResponse(users []model.User) []model.UserResponse {
 	var renderedList []model.UserResponse
 	for _, user := range users {

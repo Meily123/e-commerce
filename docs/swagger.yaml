@@ -40,15 +40,6 @@ definitions:
     - password
     - username
     type: object
-  LoginSuccessResponse:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-      token:
-        type: string
-    type: object
   ProductEditRequest:
     properties:
       base_price:
@@ -96,7 +87,13 @@ definitions:
       stock:
         type: integer
     type: object
-  SuccessUserResponse:
+  SuccessResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
     type: object
   UserEditRequest:
     properties:
@@ -337,7 +334,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Register User
+      description: Login User
       parameters:
       - description: User
         in: body
@@ -351,7 +348,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/LoginSuccessResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -360,7 +362,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-      summary: Register
+      summary: Login
       tags:
       - Authentication
   /product:
@@ -525,7 +527,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Register User
+      description: Create User
       parameters:
       - description: User
         in: body
@@ -539,7 +541,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/UserResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -620,7 +627,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/SuccessUserResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -645,7 +657,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/UserResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -657,97 +674,6 @@ paths:
       summary: get self request user
       tags:
       - User
-  /user/{id}:
-    get:
-      description: Get user base on id parameters given (Admin Only)
-      parameters:
-      - description: uuid
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: token
-        in: header
-        name: Cookie
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Get user by id
-      tags:
-      - User
-  /user/admin/{id}:
-    patch:
-      description: Update user into admin by id (Admin Only)
-      parameters:
-      - description: uuid
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: token
-        in: header
-        name: Cookie
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Update user to admin
-      tags:
-      - User
-  /user/all:
-    get:
-      description: Get all users data
-      parameters:
-      - description: token
-        in: header
-        name: Cookie
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/UserResponse'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Get all users
-      tags:
-      - User
-  /user/edit:
     put:
       description: Update self request user data
       parameters:
@@ -767,7 +693,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/UserResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -779,9 +710,79 @@ paths:
       summary: Update self user
       tags:
       - User
-  /user/edit/{id}:
+  /user/admin/{id}:
+    get:
+      description: Get user base on id parameters given (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get user by id
+      tags:
+      - User
+    patch:
+      description: Update user into admin by id (Admin Only)
+      parameters:
+      - description: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Update user to admin
+      tags:
+      - User
     put:
-      description: Update user data (Admin Only)
+      description: Update user data by id user (Admin Only)
       parameters:
       - description: uuid
         in: path
@@ -804,7 +805,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/UserResponse'
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/UserResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -814,6 +820,39 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Update user
+      tags:
+      - User
+  /user/all:
+    get:
+      description: Get all users data (Admin Only)
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/UserResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get all users
       tags:
       - User
 swagger: "2.0"

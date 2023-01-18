@@ -15,11 +15,11 @@ type UserService interface {
 	CreateUser(user model.UserRequest) (model.User, error)
 	LoginUser(loginRequest model.LoginRequest) (string, error)
 	FindById(id string) (model.User, error)
-	DeleteById(user model.User) error
-	FindAll(user model.User) ([]model.User, error)
-	GetFindById(id string, user model.User) (model.User, error)
-	UpdateAdminById(id string, user model.User) (model.User, error)
-	UpdateUser(id string, selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error)
+	DeleteById(selfRequestUser model.User) error
+	FindAll() ([]model.User, error)
+	GetFindById(id string) (model.User, error)
+	UpdateAdminById(id string) (model.User, error)
+	UpdateUser(id string, editRequest model.UserEditRequest) (model.User, error)
 	SelfUpdateUser(selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error)
 }
 
@@ -95,9 +95,9 @@ func (userServ *userService) FindById(id string) (model.User, error) {
 	return user, nil
 }
 
-func (userServ *userService) DeleteById(user model.User) error {
+func (userServ *userService) DeleteById(selfRequestUser model.User) error {
 	// delete user by id
-	err := userServ.userRepository.DeleteById(user.Id.String())
+	err := userServ.userRepository.DeleteById(selfRequestUser.Id.String())
 
 	if err != nil {
 		return err
@@ -106,13 +106,7 @@ func (userServ *userService) DeleteById(user model.User) error {
 	return nil
 }
 
-func (userServ *userService) FindAll(user model.User) ([]model.User, error) {
-	// only admin can get all the users
-	if user.IsAdmin == false {
-		err := errors.New("user not authorized")
-		return []model.User{}, err
-	}
-
+func (userServ *userService) FindAll() ([]model.User, error) {
 	// find all user
 	users, err := userServ.userRepository.FindAll()
 
@@ -123,13 +117,7 @@ func (userServ *userService) FindAll(user model.User) ([]model.User, error) {
 	return users, nil
 }
 
-func (userServ *userService) GetFindById(id string, user model.User) (model.User, error) {
-	// only admin can get all the users
-	if user.IsAdmin == false {
-		err := errors.New("user not authorized")
-		return model.User{}, err
-	}
-
+func (userServ *userService) GetFindById(id string) (model.User, error) {
 	// find all user
 	user, err := userServ.userRepository.FindById(id)
 
@@ -140,13 +128,7 @@ func (userServ *userService) GetFindById(id string, user model.User) (model.User
 	return user, nil
 }
 
-func (userServ *userService) UpdateAdminById(id string, user model.User) (model.User, error) {
-	// only admin can get all the users
-	if user.IsAdmin == false {
-		err := errors.New("user not authorized")
-		return model.User{}, err
-	}
-
+func (userServ *userService) UpdateAdminById(id string) (model.User, error) {
 	// find all user
 	err := userServ.userRepository.UpdateAdminById(id)
 
@@ -154,15 +136,15 @@ func (userServ *userService) UpdateAdminById(id string, user model.User) (model.
 		return model.User{}, err
 	}
 
-	user, _ = userServ.FindById(id)
+	user, _ := userServ.FindById(id)
 
 	return user, nil
 }
 
-func (userServ *userService) UpdateUser(id string, selfUserRequest model.User, editRequest model.UserEditRequest) (model.User, error) {
+func (userServ *userService) UpdateUser(id string, editRequest model.UserEditRequest) (model.User, error) {
 
 	// Find user
-	user, err := userServ.GetFindById(id, selfUserRequest)
+	user, err := userServ.GetFindById(id)
 
 	if err != nil {
 		return model.User{}, err
