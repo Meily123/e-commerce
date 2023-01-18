@@ -11,4 +11,5 @@ func InitRoute(router *gin.Engine, version string) {
 	ProductRoute(versionRouter)
 	UserRoute(versionRouter)
 	CartRoute(versionRouter)
+	TransactionRoute(versionRouter)
 }

@@ -17,7 +17,7 @@ func ConnectToDatabase() *gorm.DB {
 		log.Fatal("cant connect to database", err)
 	}
 
-	err = DB.AutoMigrate(model.CartProduct{}, &model.Product{}, &model.User{})
+	err = DB.AutoMigrate(model.Transaction{}, model.TransactionProduct{}, model.CartProduct{}, &model.Product{}, &model.User{})
 	if err != nil {
 		log.Fatal("cant migrate database", err)
 	}

@@ -70,6 +70,7 @@ func (cartHandle *CartHandler) CreateCartHandler(c *gin.Context) {
 
 	// handle error saving cart
 	if err != nil {
+		fmt.Println("here")
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
 			"error": "something went wrong",

@@ -19,6 +19,12 @@ func RequireAuthentication(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
+	if tokenString == "" {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	// Decode/Validate
@@ -32,11 +38,17 @@ func RequireAuthentication(c *gin.Context) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 
+	if err != nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// Check expire
 
 		if float64(time.Now().UnixNano()) > claims["exp"].(float64) {
 			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
 
 		// Find the user by sub token which contain User Id
@@ -47,6 +59,12 @@ func RequireAuthentication(c *gin.Context) {
 
 		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		if user.Id.String() == "00000000-0000-0000-0000-000000000000" {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
 
 		// Attach Req
@@ -58,6 +76,7 @@ func RequireAuthentication(c *gin.Context) {
 	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
+
 }
 
 func AdminOnly(c *gin.Context) {

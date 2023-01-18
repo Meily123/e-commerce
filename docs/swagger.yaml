@@ -179,6 +179,23 @@ definitions:
       updated_at:
         type: integer
     type: object
+  model.TransactionProduct:
+    properties:
+      id:
+        type: string
+      item:
+        $ref: '#/definitions/model.Product'
+      item_id:
+        type: string
+      margin:
+        type: integer
+      quantity:
+        type: integer
+      sum:
+        type: integer
+      transaction_id:
+        type: string
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -534,6 +551,61 @@ paths:
       summary: Register
       tags:
       - Authentication
+  /transaction:
+    get:
+      consumes:
+      - application/json
+      description: Create New Transaction
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TransactionProduct'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create Transaction
+      tags:
+      - Transaction
+    post:
+      consumes:
+      - application/json
+      description: Create New Transaction
+      parameters:
+      - description: token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.TransactionProduct'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create Transaction
+      tags:
+      - Transaction
   /user/:
     delete:
       description: Delete logged In self request user

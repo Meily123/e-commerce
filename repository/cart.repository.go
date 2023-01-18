@@ -22,7 +22,8 @@ func NewCartRepository() *cartRepository {
 
 func (cartRepo *cartRepository) CreateCart(cart model.CartProduct, user model.User) (model.CartProduct, error) {
 	// Create cart
-	err := config.ConnectToDatabase().Model(&user).Association("Cart").Append(&cart)
+	cart.UserId = user.Id
+	err := config.ConnectToDatabase().Create(&cart).Error
 
 	return cart, err
 }
