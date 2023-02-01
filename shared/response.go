@@ -13,23 +13,15 @@ type LoginSuccessResponse struct {
 	Token   string
 } //@name LoginSuccessResponse
 
-type SuccessUserResponse struct {
-	code    int
-	massage string
-	user    model.UserResponse
-} //@name SuccessUserResponse
-
-type SuccessListUserResponse struct {
-	code    int
-	massage string
-	user    []model.UserResponse
-} //@name SuccessListUserResponse
-
 type SuccessResponse struct {
-	Code    int         `json:"code" `
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	BaseSuccessResponse
+	Data interface{} `json:"data"`
 } //@name SuccessResponse
+
+type BaseSuccessResponse struct {
+	Code    int    `json:"code" `
+	Message string `json:"message"`
+} //@name BaseSuccessResponse
 
 func ListUserRenderToResponse(users []model.User) []model.UserResponse {
 	var renderedList []model.UserResponse

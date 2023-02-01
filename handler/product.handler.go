@@ -26,7 +26,7 @@ func NewProductHandler(productServ service.ProductService) *ProductHandler {
 // @Param Cookie header string  false "token"
 // @Accept  json
 // @Produce  json
-// @success 200 {object} model.Product
+// @Success 200 {object} SuccessResponse{data=model.ProductResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /product [post]
@@ -62,7 +62,7 @@ func (productHandle *ProductHandler) CreateProductHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":  500,
-			"error": "something went wrong",
+			"error": err.Error(),
 		})
 		return
 	}
@@ -81,19 +81,19 @@ func (productHandle *ProductHandler) CreateProductHandler(c *gin.Context) {
 // @Produce  json
 // @Param id path string true "uuid"
 // @Param Cookie header string  false "token"
-// @success 200 {object} ProductResponse
+// @Success 200 {object} BaseSuccessResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /product/{id} [DELETE]
 func (productHandle *ProductHandler) DeleteProductHandler(c *gin.Context) {
 	id := c.Params.ByName("id")
 
-	er := productHandle.productService.DeleteById(id)
+	err := productHandle.productService.DeleteById(id)
 
-	if er != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -110,18 +110,18 @@ func (productHandle *ProductHandler) DeleteProductHandler(c *gin.Context) {
 // @Tags Product
 // @Produce  json
 // @Param Cookie header string  false "token"
-// @success 200 {array} ProductResponse
+// @Success 200 {object} SuccessResponse{data=[]model.ProductResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /product [GET]
 func (productHandle *ProductHandler) GetAllProductHandler(c *gin.Context) {
 
-	products, er := productHandle.productService.FindAll()
+	products, err := productHandle.productService.FindAll()
 
-	if er != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"code":  403,
-			"error": "you don't have access",
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -135,24 +135,24 @@ func (productHandle *ProductHandler) GetAllProductHandler(c *gin.Context) {
 
 // GetFindById godoc
 // @Summary Get product by id
-// @Description Get product base on id parameters given (Admin Only)
+// @Description Get product base on id parameters given
 // @Tags Product
 // @Produce  json
 // @Param id path string true "uuid"
 // @Param Cookie header string  false "token"
-// @success 200 {object} ProductResponse
+// @Success 200 {object} SuccessResponse{data=model.ProductResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /product/{id} [GET]
 func (productHandle *ProductHandler) GetFindById(c *gin.Context) {
 	id := c.Params.ByName("id")
 
-	product, er := productHandle.productService.GetFindById(id)
+	product, err := productHandle.productService.GetFindById(id)
 
-	if er != nil {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"code":  400,
-			"error": "Bad Request",
+			"error": err.Error(),
 		})
 		return
 	}
@@ -172,7 +172,7 @@ func (productHandle *ProductHandler) GetFindById(c *gin.Context) {
 // @Param id path string true "uuid"
 // @Param Body body ProductEditRequest true "Product"
 // @Param Cookie header string  false "token"
-// @success 200 {object} ProductResponse
+// @Success 200 {object} SuccessResponse{data=model.ProductResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /product/{id} [PUT]
@@ -180,10 +180,11 @@ func (productHandle *ProductHandler) UpdateProductHandler(c *gin.Context) {
 	// body
 	var editRequest model.ProductEditRequest
 	err := c.BindJSON(&editRequest)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code":  500,
-			"error": err,
+			"code":  400,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -192,11 +193,10 @@ func (productHandle *ProductHandler) UpdateProductHandler(c *gin.Context) {
 	id := c.Params.ByName("id")
 
 	product, err := productHandle.productService.UpdateProduct(id, editRequest)
-
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":  400,
-			"error": "error bad request",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":  500,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -207,63 +207,3 @@ func (productHandle *ProductHandler) UpdateProductHandler(c *gin.Context) {
 		"product": product,
 	})
 }
-
-/*
-// ProductHandler1 godoc
-// @Summary get product
-// @Description get detail product
-// @Tags Product
-// @Param id path int true "uuid"
-// @Accept  json
-// @Produce  json
-// @Success 200  {object} model.Product
-// @Router /product/{id} [get]
-func ProductHandler1(c *gin.Context) {
-	id := c.Params.ByName("id")
-	//id := c.Query("id")
-	//prod := model.Product{id}
-	c.JSON(http.StatusOK, gin.H{
-		"id":    id,
-		"judul": "title",
-	})
-}
-
-// ProductInputHandler godoc
-// @Summary post product
-// @Description post create product
-// @Tags Product
-// @Param Body body ProductRequest true "Product"
-// @Accept  json
-// @Produce  json
-// @Success 200  {object} model.Product
-// @Router /product [post]
-func ProductInputHandler(c *gin.Context) {
-	var productInput model.ProductRequest
-
-	err := c.BindJSON(&productInput)
-	if err != nil {
-		var ve validator.ValidationErrors
-		var errorMassages []string
-		if errors.As(err, &ve) {
-			for _, e := range err.(validator.ValidationErrors) {
-				errorMessage := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
-				errorMassages = append(errorMassages, errorMessage)
-			}
-		} else {
-			errorMassages = append(errorMassages, err.Error())
-		}
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   true,
-			"massage": errorMassages,
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"title":        productInput.Name,
-		"base_price":   productInput.BasePrice,
-		"sell_price":   productInput.SellPrice,
-		"stock":        productInput.Stock,
-		"descriptions": productInput.Description,
-	})
-}*/

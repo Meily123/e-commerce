@@ -20,7 +20,7 @@ func NewCartHandler(cartServ service.CartService) *CartHandler {
 
 // CreateCartHandler godoc
 // @Summary Create Cart
-// @Description Create New Cart
+// @Description Add product to cart
 // @Tags Cart
 // @Param Body body CartRequest true "cart"
 // @Param Cookie header string  false "token"

@@ -13,7 +13,7 @@ type Transaction struct {
 	TotalMargin int                  `json:"total_margin"`
 	TotalItem   int                  `json:"total_item"`
 	IsPaid      bool                 `json:"is_paid" gorm:"default:false;"`
-	CreatedAt   int64                `json:"created_at" gorm:"autoCreatedTime:nano;"`
+	CreatedAt   int64                `json:"created_at" gorm:"autoCreateTime:nano;"`
 	PaidAt      int64                `json:"paid_at"`
 	IsActive    bool                 `json:"is_active" gorm:"default:false"`
 }
@@ -27,6 +27,12 @@ type TransactionProduct struct {
 	Sum           int       `json:"sum"  gorm:"not null"`
 	Margin        int       `json:"margin" gorm:"not null"`
 }
+
+type TransactionSummaryResponse struct {
+	TotalSoldProduct       int `json:"total_quantity_sold_product"`
+	TotalSumSoldProduct    int `json:"total_sum_sold_product"`
+	TotalMarginSoldProduct int `json:"total_margin_sold_product"`
+} // @TransactionSummaryResponse
 
 func (t *Transaction) BeforeCreate(*gorm.DB) (err error) {
 	t.Id = uuid.New()

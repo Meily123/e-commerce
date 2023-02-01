@@ -10,6 +10,7 @@ type CartRepository interface {
 	CreateCart(cart model.CartProduct, user model.User) (model.CartProduct, error)
 	FindAll(user model.User) ([]model.CartProduct, error)
 	FindById(id string) (model.CartProduct, error)
+	FindByItemId(id string) (model.CartProduct, error)
 	Update(id string, editRequest model.CartProductEditRequest) (model.CartProduct, error)
 }
 
@@ -23,6 +24,7 @@ func NewCartRepository() *cartRepository {
 func (cartRepo *cartRepository) CreateCart(cart model.CartProduct, user model.User) (model.CartProduct, error) {
 	// Create cart
 	cart.UserId = user.Id
+
 	err := config.ConnectToDatabase().Create(&cart).Error
 
 	return cart, err
@@ -57,6 +59,20 @@ func (cartRepo *cartRepository) FindById(id string) (model.CartProduct, error) {
 	// Find by id
 	cart := model.CartProduct{}
 	err := config.ConnectToDatabase().Find(&cart, "id = ?", id).Error
+
+	if err != nil {
+		return model.CartProduct{}, err
+	}
+
+	err = cart.EmptyProductStruct()
+
+	return cart, err
+}
+
+func (cartRepo *cartRepository) FindByItemId(id string) (model.CartProduct, error) {
+	// Find by id
+	cart := model.CartProduct{}
+	err := config.ConnectToDatabase().Find(&cart, "item_id = ?", id).Error
 
 	if err != nil {
 		return model.CartProduct{}, err

@@ -214,7 +214,7 @@ func (userHandle *UserHandler) SelfDeleteUserHandler(c *gin.Context) {
 // @Success 200 {object} SuccessResponse{data=[]model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/all [GET]
+// @Router /admin/user/ [GET]
 func (userHandle *UserHandler) GetAllUserHandler(c *gin.Context) {
 
 	users, err := userHandle.userService.FindAll()
@@ -244,7 +244,7 @@ func (userHandle *UserHandler) GetAllUserHandler(c *gin.Context) {
 // @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/admin/{id} [GET]
+// @Router /admin/user/{id} [GET]
 func (userHandle *UserHandler) GetFindById(c *gin.Context) {
 	id := c.Params.ByName("id")
 
@@ -275,7 +275,7 @@ func (userHandle *UserHandler) GetFindById(c *gin.Context) {
 // @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/admin/{id} [PATCH]
+// @Router /admin/user/{id} [PATCH]
 func (userHandle *UserHandler) UpdateUserToAdminHandler(c *gin.Context) {
 	id := c.Params.ByName("id")
 
@@ -307,7 +307,7 @@ func (userHandle *UserHandler) UpdateUserToAdminHandler(c *gin.Context) {
 // @Success 200 {object} SuccessResponse{data=model.UserResponse}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /user/admin/{id} [PUT]
+// @Router /admin/user/{id} [PUT]
 func (userHandle *UserHandler) UpdateUserHandler(c *gin.Context) {
 	// body
 	var editRequest model.UserEditRequest

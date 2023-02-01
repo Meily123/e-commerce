@@ -8,7 +8,7 @@ import (
 
 type CartProduct struct {
 	Id       uuid.UUID `json:"id" gorm:"primaryKey;default:uuid_generate_v4(); not null;constraint:OnDelete:CASCADE;"`
-	Item     Product   `gorm:"constraint:OnDelete:CASCADE"`
+	Item     Product   `gorm:"constraint:OnDelete:CASCADE;"`
 	Quantity int
 	UserId   uuid.UUID
 	ItemId   uuid.UUID

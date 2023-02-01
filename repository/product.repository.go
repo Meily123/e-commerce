@@ -11,6 +11,7 @@ type ProductRepository interface {
 	FindAll() ([]model.Product, error)
 	FindById(id string) (model.Product, error)
 	Update(id string, editRequest model.ProductEditRequest) (model.Product, error)
+	UpdateStock(stock int, product model.Product) error
 }
 
 type productRepository struct {
@@ -76,4 +77,11 @@ func (productRepo *productRepository) Update(id string, editRequest model.Produc
 	err = config.ConnectToDatabase().Save(&product).Error
 
 	return product, err
+}
+
+func (productRepo *productRepository) UpdateStock(stock int, product model.Product) error {
+	// Save changes
+	err := config.ConnectToDatabase().Model(product).Select("stock").Updates(model.Product{Stock: stock}).Error
+
+	return err
 }

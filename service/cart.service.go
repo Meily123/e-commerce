@@ -1,9 +1,9 @@
 package service
 
 import (
-	"WebAPI/config"
 	"WebAPI/model"
 	"WebAPI/repository"
+	"errors"
 )
 
 type CartService interface {
@@ -23,20 +23,38 @@ func NewCartService(cartRepo repository.CartRepository) *cartService {
 
 func (cartServ *cartService) CreateCart(cartRequest model.CartProductRequest, user model.User) (model.CartProduct, error) {
 
-	// cartRequest to cart
+	// get product
 	productRepo := repository.NewProductRepository()
 	product, err := productRepo.FindById(cartRequest.ItemId)
+	if err != nil {
+		return model.CartProduct{}, err
+	}
+
+	// find product in cart
+	existCartProduct, err := cartServ.cartRepository.FindByItemId(cartRequest.ItemId)
+
+	if existCartProduct.Id.String() != "00000000-0000-0000-0000-000000000000" {
+		return model.CartProduct{}, errors.New("cart product already exist")
+	}
+
+	//check if product stock sufficient
+	if product.Stock < cartRequest.Quantity {
+		return model.CartProduct{}, errors.New("insufficient product stock")
+	}
+
+	// create cart struct
 	cart := model.CartProduct{
 		ItemId:   product.Id,
-		Item:     product,
 		Quantity: cartRequest.Quantity,
 	}
 
-	// get user with all cart list
-	err = config.ConnectToDatabase().Preload("Cart").First(&user).Error
-
-	// point to repository CreateCart
+	// create cart
 	cart, err = cartServ.cartRepository.CreateCart(cart, user)
+	if err != nil {
+		return model.CartProduct{}, err
+	}
+
+	cart.Item = product
 
 	return cart, err
 }
@@ -60,6 +78,21 @@ func (cartServ *cartService) DeleteById(id string, user model.User) error {
 func (cartServ *cartService) FindAll(user model.User) ([]model.CartProduct, error) {
 	// find all cart
 	carts, err := cartServ.cartRepository.FindAll(user)
+
+	for _, cart := range carts {
+		if cart.Item.Stock < cart.Quantity {
+			cart.Quantity = cart.Item.Stock
+
+			editRequest := model.CartProductEditRequest{
+				Quantity: cart.Item.Stock,
+			}
+			_, err = cartServ.cartRepository.Update(cart.Id.String(), editRequest)
+
+			if err != nil {
+				return []model.CartProduct{}, err
+			}
+		}
+	}
 
 	if err != nil {
 		return []model.CartProduct{}, err
@@ -92,6 +125,18 @@ func (cartServ *cartService) UpdateCart(id string, editRequest model.CartProduct
 		return model.CartProduct{}, err
 	}
 
+	// get product
+	productRepo := repository.NewProductRepository()
+	product, err := productRepo.FindById(id)
+	if err != nil {
+		return model.CartProduct{}, err
+	}
+
+	// check if stock sufficient
+	if product.Stock < editRequest.Quantity {
+		return model.CartProduct{}, errors.New("insufficient product stock")
+	}
+
 	// update cart
 	cart, err := cartServ.cartRepository.Update(id, editRequest)
 	if err != nil {
@@ -102,7 +147,7 @@ func (cartServ *cartService) UpdateCart(id string, editRequest model.CartProduct
 }
 
 func (cartServ *cartService) checkUserCart(id string, userId string) error {
-	//find he cart
+	//find the cart
 	cart, err := cartServ.cartRepository.FindById(id)
 	if err != nil {
 		return err

@@ -28,7 +28,7 @@ func UserRoute(versionRoute *gin.RouterGroup) {
 
 	// user route, only admin Access
 	adminUserVersionRoute := versionRoute.Group("/admin/user")
-	adminUserVersionRoute.GET("/all", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.GetAllUserHandler)
+	adminUserVersionRoute.GET("/", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.GetAllUserHandler)
 	adminUserVersionRoute.GET("/:id", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.GetFindById)
 	adminUserVersionRoute.PATCH("/:id", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.UpdateUserToAdminHandler)
 	adminUserVersionRoute.PUT("/:id", middleware.RequireAuthentication, middleware.AdminOnly, userHandler.UpdateUserHandler)
